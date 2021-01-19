@@ -3,11 +3,12 @@ const express = require('express')
 const morgan = require('morgan')
 const favicon = require('serve-favicon')
 const bodyParser = require('body-parser')
-const { Sequelize } = require('sequelize')
+const { Sequelize, DataTypes } = require('sequelize')
 const { success, getUniqueId } = require('./helper.js')
 
 // DB File
 let pokemons = require('./mock-pokemon')
+const PokemonModel = require('./src/models/pokemon')
 
 // App Init
 const app = express()
@@ -30,6 +31,11 @@ const sequelize = new Sequelize(
 sequelize.authenticate()
     .then(_ => console.log('La connexion à la base de donnée a bien été établie.'))
     .catch(error => console.error(`Impossible de se connecter à la base de données ${error}`))
+
+const Pokemon = PokemonModel(sequelize,DataTypes)
+
+sequelize.sync({force:true})
+    .then(_ => console.log('La base de données "Pokedex" a bien été synchronisée.'))
 
 // Middlewares
 app
